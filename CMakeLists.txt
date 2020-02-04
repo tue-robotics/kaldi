@@ -245,4 +245,7 @@ write_basic_package_version_file(
 install(FILES ${CMAKE_BINARY_DIR}/cmake/kaldi-config.cmake ${CMAKE_BINARY_DIR}/cmake/kaldi-config-version.cmake
     DESTINATION lib/cmake/kaldi
 )
+
+install(FILES ${CMAKE_BINARY_DIR}/pkgconfig/kaldi.pc DESTINATION lib/pkgconfig)
+
 install(EXPORT kaldi-targets DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/kaldi)
