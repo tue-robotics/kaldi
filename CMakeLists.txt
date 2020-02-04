@@ -223,6 +223,20 @@ configure_package_config_file(
     ${CMAKE_BINARY_DIR}/cmake/kaldi-config.cmake
     INSTALL_DESTINATION lib/cmake/kaldi
 )
+
+message(STATUS "The list of generated libraries is: ${GENERATED_LIBS}")
+set(DEST_DIR "${CMAKE_INSTALL_PREFIX}")
+
+foreach(LIB ${GENERATED_LIBS})
+  set(PRIVATE_LIBS "${PRIVATE_LIBS} -l${LIB}")
+endforeach()
+
+configure_package_config_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/kaldi.pc.in
+    ${CMAKE_BINARY_DIR}/pkgconfig/kaldi.pc
+    INSTALL_DESTINATION lib/pkgconfig
+)
+
 write_basic_package_version_file(
     ${CMAKE_BINARY_DIR}/cmake/kaldi-config-version.cmake
     VERSION ${KALDI_VERSION}
