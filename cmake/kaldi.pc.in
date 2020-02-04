@@ -1,0 +1,9 @@
+prefix=@DEST_DIR@
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: kaldi
+Description: Kaldi Speech Recognition Toolkit
+Version:@VERSION@
+Libs: -L${libdir} @PRIVATE_LIBS@
+Cflags: -I${includedir}
