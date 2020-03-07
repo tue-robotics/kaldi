@@ -5,5 +5,5 @@ includedir=${prefix}/include
 Name: kaldi
 Description: Kaldi Speech Recognition Toolkit
 Version:@VERSION@
-Libs: -L${libdir} @PRIVATE_LIBS@
-Cflags: -I${includedir}
+Libs: -L${libdir} -lfst @PRIVATE_LIBS@
+Cflags: -I${includedir}/kaldi -I${includedir}/openfst
