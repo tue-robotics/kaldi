@@ -145,8 +145,6 @@ _kaldi_build_src_cmake()
     cd build
     cmake -GNinja -DCMAKE_INSTALL_PREFIX=../dist -DKALDI_BUILD_EXE=OFF -DKALDI_BUILD_TEST=OFF -DBUILD_SHARED_LIBS=ON ..
     cmake --build . --target install
-
-
 }
 
 _kaldi_build_src_make()
