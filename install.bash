@@ -9,9 +9,9 @@
 usage()
 {
     echo "-----------------------------------------------------------------------------"
-    echo -e "\e[35m\e[1m                  LASeR: Linux Automatic Speech Recognition \e[0m"
+    echo -e "\e[35m\e[1m                  Kaldi Automatic Speech Recognition \e[0m"
     echo "-----------------------------------------------------------------------------"
-    echo "Usage: sudo ./setup [options] <values>"
+    echo "Usage: sudo ./install.bash [options] <values>"
     echo -e "Options:\n \
         -h | --help\n \
         --tue\n \
@@ -55,12 +55,11 @@ _kaldi_install_dependencies()
 _kaldi_check_dependencies()
 {
     echo "Checking dependencies..."
-    # Change exit to return to source check_dependencies and change back once done
     $KALDI/tools/extras/check_dependencies.sh > /dev/null
 }
 
 # Kaldi Build (Common to Installation and Update)
-_kaldi_build()
+_kaldi_build_tools()
 {
     # Build toolkit
     echo "Building toolkit..."
@@ -75,9 +74,13 @@ _kaldi_build()
         return 1
     fi
     echo "  - Built tools"
+}
 
+_kaldi_build_irstlm()
+{
     # Install IRSTLM
     # Remove IRSTLM dir if it exists else the install script fails
+    cd $KALDI/tools
     if [ -d "irstlm" ]
     then
         rm -rf irstlm
@@ -91,8 +94,12 @@ _kaldi_build()
         return 1
     fi
     echo "  - Built IRSTLM"
+}
 
+_kaldi_build_sequitur()
+{
     # Install Sequitur
+    cd $KALDI/tools
     extras/install_sequitur.sh &> $ASR_LOG/install_sequitur.log
     install_sequitur_status=$(grep "Installation of SEQUITUR finished successfully" $ASR_LOG/install_sequitur.log)
 
@@ -102,8 +109,12 @@ _kaldi_build()
         return 1
     fi
     echo "  - Built SEQUITUR"
+}
 
+_kaldi_build_srilm()
+{
     # Install SRILM
+    cd $KALDI/tools
     # Download SRILM if .tgz does not exist
     if [ ! -f "srilm.tgz" ]
     then
@@ -118,7 +129,26 @@ _kaldi_build()
         return 1
     fi
     echo "  - Built SRILM"
+}
 
+_kaldi_build_src_cmake()
+{
+    # Build src using CMake
+    cd $KALDI
+
+    if [ -d build ]
+    then
+        rm -rf build
+    fi
+
+    mkdir build
+    cd build
+    cmake -GNinja -DCMAKE_INSTALL_PREFIX=../dist -DKALDI_BUILD_EXE=OFF -DKALDI_BUILD_TEST=OFF -DBUILD_SHARED_LIBS=ON ..
+    cmake --build . --target install
+}
+
+_kaldi_build_src_make()
+{
     # Build the src directory
     cd $KALDI/src
     ./configure --shared &> $ASR_LOG/configure_src.log
@@ -143,6 +173,15 @@ _kaldi_build()
         return 1
     fi
     echo "  - Built src"
+}
+
+_kaldi_build()
+{
+    _kaldi_build_tools || return 1
+    _kaldi_build_irstlm || return 1
+    _kaldi_build_sequitur || return 1
+    _kaldi_build_srilm || return 1
+    _kaldi_build_src_make || return 1
 
     # Create a STATUS file to monitor installation
     cd $KALDI
@@ -277,8 +316,8 @@ else
 
             --tue )
                 _kaldi_check_dependencies || exit 1
-                _kaldi_build || exit 1
-                _kaldi_online_gst || exit 1
+                _kaldi_build_tools || exit 1
+                _kaldi_build_src_cmake || exit 1
                 echo -e "\e[36m\e[1m Kaldi installation complete \e[0m" ;;
 
             -h | --help )
@@ -292,4 +331,3 @@ else
         shift
     done
 fi
-

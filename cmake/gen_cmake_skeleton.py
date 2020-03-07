@@ -115,11 +115,18 @@ class CMakeListsHeaderLibrary(object):
 
     def gen_code(self):
         ret = []
+        ret.append('set(ALL_TARGETS ${ALL_TARGETS} ' + '{} CACHE INTERNAL "ALL_TARGETS")'.format(self.target_name))
         if len(self.header_list) > 0:
             ret.append("set(PUBLIC_HEADERS")
             for f in self.header_list:
                 ret.append("    " + f)
             ret.append(")\n")
+
+        ret.append('if (GENERATED_LIBS STREQUAL "")')
+        ret.append('    set(GENERATED_LIBS "{}" CACHE INTERNAL "GENERATED_LIBS")'.format(self.target_name))
+        ret.append('else()')
+        ret.append('    set(GENERATED_LIBS "${GENERATED_LIBS};' + '{}" CACHE INTERNAL "GENERATED_LIBS")'.format(self.target_name))
+        ret.append('endif()')
 
         ret.append("add_library(" + self.target_name + " INTERFACE)")
         ret.append("target_include_directories(" + self.target_name + " INTERFACE ")
@@ -171,6 +178,7 @@ class CMakeListsLibrary(object):
 
     def gen_code(self):
         ret = []
+        ret.append('set(ALL_TARGETS ${ALL_TARGETS} ' + '{} CACHE INTERNAL "ALL_TARGETS")'.format(self.target_name))
 
         if len(self.header_list) > 0:
             ret.append("set(PUBLIC_HEADERS")
@@ -187,6 +195,13 @@ class CMakeListsLibrary(object):
                 ret.append("        " + f)
             ret.append("    )")
             ret.append("endif()\n")
+
+        # ret.append('list(APPEND GENERATED_LIBS "{}")'.format(self.target_name))
+        ret.append('if (GENERATED_LIBS STREQUAL "")')
+        ret.append('    set(GENERATED_LIBS "{}" CACHE INTERNAL "GENERATED_LIBS")'.format(self.target_name))
+        ret.append('else()')
+        ret.append('    set(GENERATED_LIBS "${GENERATED_LIBS};' + '{}" CACHE INTERNAL "GENERATED_LIBS")'.format(self.target_name))
+        ret.append('endif()')
 
         ret.append("add_library(" + self.target_name)
         for f in self.source_list:
