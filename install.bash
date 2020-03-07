@@ -318,6 +318,9 @@ else
                 _kaldi_check_dependencies || exit 1
                 _kaldi_build_tools || exit 1
                 _kaldi_build_src_cmake || exit 1
+                # Create a STATUS file to monitor installation
+                cd $KALDI
+                echo "ALL OK" > STATUS
                 echo -e "\e[36m\e[1m Kaldi installation complete \e[0m" ;;
 
             -h | --help )
