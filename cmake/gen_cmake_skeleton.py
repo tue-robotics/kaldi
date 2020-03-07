@@ -122,11 +122,12 @@ class CMakeListsHeaderLibrary(object):
                 ret.append("    " + f)
             ret.append(")\n")
 
-        ret.append('if (GENERATED_LIBS STREQUAL "")')
-        ret.append('    set(GENERATED_LIBS "{}" CACHE INTERNAL "GENERATED_LIBS")'.format(self.target_name))
-        ret.append('else()')
-        ret.append('    set(GENERATED_LIBS "${GENERATED_LIBS};' + '{}" CACHE INTERNAL "GENERATED_LIBS")'.format(self.target_name))
-        ret.append('endif()')
+        if self.target_name != 'kaldi-itf':
+            ret.append('if (GENERATED_LIBS STREQUAL "")')
+            ret.append('    set(GENERATED_LIBS "{}" CACHE INTERNAL "GENERATED_LIBS")'.format(self.target_name))
+            ret.append('else()')
+            ret.append('    set(GENERATED_LIBS "${GENERATED_LIBS};' + '{}" CACHE INTERNAL "GENERATED_LIBS")'.format(self.target_name))
+            ret.append('endif()')
 
         ret.append("add_library(" + self.target_name + " INTERFACE)")
         ret.append("target_include_directories(" + self.target_name + " INTERFACE ")
@@ -196,12 +197,12 @@ class CMakeListsLibrary(object):
             ret.append("    )")
             ret.append("endif()\n")
 
-        # ret.append('list(APPEND GENERATED_LIBS "{}")'.format(self.target_name))
-        ret.append('if (GENERATED_LIBS STREQUAL "")')
-        ret.append('    set(GENERATED_LIBS "{}" CACHE INTERNAL "GENERATED_LIBS")'.format(self.target_name))
-        ret.append('else()')
-        ret.append('    set(GENERATED_LIBS "${GENERATED_LIBS};' + '{}" CACHE INTERNAL "GENERATED_LIBS")'.format(self.target_name))
-        ret.append('endif()')
+        if self.target_name != 'kaldi-itf':
+            ret.append('if (GENERATED_LIBS STREQUAL "")')
+            ret.append('    set(GENERATED_LIBS "{}" CACHE INTERNAL "GENERATED_LIBS")'.format(self.target_name))
+            ret.append('else()')
+            ret.append('    set(GENERATED_LIBS "${GENERATED_LIBS};' + '{}" CACHE INTERNAL "GENERATED_LIBS")'.format(self.target_name))
+            ret.append('endif()')
 
         ret.append("add_library(" + self.target_name)
         for f in self.source_list:
