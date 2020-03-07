@@ -136,6 +136,13 @@ _kaldi_build_src_cmake()
     # Build src using CMake
     cd $KALDI
 
+    # Remove existing STATUS file from previous build
+    if [ -f STATUS ]
+    then
+        rm STATUS
+    fi
+
+    # Remove existing build directory
     if [ -d build ]
     then
         rm -rf build
@@ -144,7 +151,11 @@ _kaldi_build_src_cmake()
     mkdir build
     cd build
     cmake -GNinja -DCMAKE_INSTALL_PREFIX=../dist -DKALDI_BUILD_EXE=OFF -DKALDI_BUILD_TEST=OFF -DBUILD_SHARED_LIBS=ON ..
-    cmake --build . --target install
+    cmake --build . --target install || { echo "CMake build failed" && return 1; }
+
+    # Create a STATUS file to monitor installation
+    cd $KALDI
+    echo "ALL OK" > STATUS
 }
 
 _kaldi_build_src_make()
@@ -318,9 +329,6 @@ else
                 _kaldi_check_dependencies || exit 1
                 _kaldi_build_tools || exit 1
                 _kaldi_build_src_cmake || exit 1
-                # Create a STATUS file to monitor installation
-                cd $KALDI
-                echo "ALL OK" > STATUS
                 echo -e "\e[36m\e[1m Kaldi installation complete \e[0m" ;;
 
             -h | --help )
