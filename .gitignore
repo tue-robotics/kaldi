@@ -7,6 +7,12 @@
 !/src/*/Makefile
 !/src/*/README
 
+# TechUnited begin
+/log/
+/src/gst-plugin/kaldimarshal.cc
+/src/gst-plugin/kaldimarshal.h
+# TechUnited end
+
 # Compiled Object files and python ciles
 *.slo
 *.lo
